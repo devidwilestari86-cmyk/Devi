@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Kuis Energi Masa Depan</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Fredoka', 'Poppins', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        /* Animated Sky Gradient */
+        .sky-animated {
+            background: linear-gradient(180deg, #38BDF8 0%, #7DD3FC 40%, #BAE6FD 70%, #E0F2FE 100%);
+        }
+
+        /* Card & Wooden Sign Styling */
+        .game-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 4px solid #FBBF24;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .wooden-sign {
+            background: linear-gradient(180deg, #B45309 0%, #78350F 100%);
+            border: 4px solid #451A03;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.4), 0 8px 16px rgba(0,0,0,0.3);
+        }
+
+        /* Interactive Animations */
+        .btn-bounce {
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease;
+        }
+        .btn-bounce:hover {
+            transform: translateY(-3px) scale(1.02);
+        }
+        .btn-bounce:active {
+            transform: translateY(2px) scale(0.96);
+        }
+
+        /* Animated Button pulse/wobble for Section 2 Start Button */
+        @keyframes startBtnPulse {
+            0%, 100% {
+                transform: scale(1) rotate(0deg);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            25% {
+                transform: scale(1.05) rotate(-2deg);
+            }
+            50% {
+                transform: scale(1.08) rotate(2deg);
+                box-shadow: 0 0 25px 10px rgba(16, 185, 129, 0.4);
+            }
+            75% {
+                transform: scale(1.04) rotate(-1deg);
+            }
+        }
+        .animate-start-btn {
+            animation: startBtnPulse 2s infinite ease-in-out;
+        }
+
+        /* CSS Background Animations */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(2deg); }
+        }
+        .animate-float-slow {
+            animation: floatSlow 4s ease-in-out infinite;
+        }
+
+        @keyframes cloudMove {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(1000%); }
+        }
+        .animate-cloud-drift {
+            animation: cloudMove 35s linear infinite;
+        }
+
+        @keyframes spinSlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spinSlow 6s linear infinite;
+        }
+
+        @keyframes sunGlow {
+            0%, 100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 15px #FBBF24); }
+            50% { transform: scale(1.1) rotate(180deg); filter: drop-shadow(0 0 25px #F59E0B); }
+        }
+        .animate-sun-glow {
+            animation: sunGlow 8s ease-in-out infinite;
+        }
+
+        @keyframes grassSway {
+            0%, 100% { transform: skewX(0deg); }
+            50% { transform: skewX(4deg); }
+        }
+        .animate-grass {
+            animation: grassSway 3s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+
+        @keyframes characterBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-hero {
+            animation: characterBounce 1.8s ease-in-out infinite;
+        }
+
+        /* Certificate Print Styling */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #certificate-area, #certificate-area * {
+                visibility: visible;
+            }
+            #certificate-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                box-shadow: none;
+                border: none;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 min-h-screen flex items-center justify-center p-2 sm:p-4 overflow-x-hidden">
+
+    <!-- Container Utama Landscape 16:9 Adaptif -->
+    <main class="w-full max-w-4xl aspect-[16/9] min-h-[550px] relative rounded-3xl overflow-hidden border-8 border-yellow-300 shadow-2xl sky-animated flex flex-col justify-between p-3 sm:p-6">
+        
+        <!-- LATAR BELAKANG ANIMASI KARTUN LUCU -->
+        <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+            
+            <!-- Matahari Lucu Bersinar -->
+            <div class="absolute -top-6 -right-6 text-7xl sm:text-8xl animate-sun-glow select-none">
+                ☀️
+            </div>
+
+            <!-- Awan Berjalan di Langit -->
+            <div class="absolute top-4 left-0 text-white text-4xl sm:text-5xl opacity-90 animate-cloud-drift select-none">
+                ☁️
+            </div>
+            <div class="absolute top-12 left-0 text-white text-6xl opacity-80 animate-cloud-drift select-none" style="animation-delay: -12s; animation-duration: 45s;">
+                ☁️
+            </div>
+            <div class="absolute top-20 left-0 text-white text-5xl opacity-75 animate-cloud-drift select-none" style="animation-delay: -22s; animation-duration: 38s;">
+                ☁️
+            </div>
+
+            <!-- Burung Terbang -->
+            <div class="absolute top-16 right-1/3 text-2xl animate-float-slow opacity-80">
+                🕊️
+            </div>
+
+            <!-- Bukit Hijau Bertingkat -->
+            <div class="absolute bottom-0 w-[120%] -left-[10%] h-1/3 bg-emerald-500 rounded-t-[50%] scale-110 transform translate-y-6 animate-grass"></div>
+            <div class="absolute bottom-0 w-[120%] -left-[10%] h-1/4 bg-green-600 rounded-t-[40%] transform translate-y-2"></div>
+
+            <!-- Kincir Angin Berputar di Bukit Kiri -->
+            <div class="absolute bottom-16 left-8 flex flex-col items-center">
+                <div class="text-4xl sm:text-5xl animate-spin-slow origin-center">🎡</div>
+                <div class="w-2 h-10 bg-amber-800 rounded-full"></div>
+            </div>
+
+            <!-- Panel Surya Mengapung di Kiri Bawah -->
+            <div class="absolute bottom-6 left-28 text-3xl sm:text-4xl animate-float-slow" style="animation-delay: 1s;">
+                🟨
+            </div>
+
+            <!-- Bendungan & Air Terjun di Kanan -->
+            <div class="absolute bottom-12 right-10 flex flex-col items-center">
+                <div class="text-4xl sm:text-5xl">🌊</div>
+                <div class="text-xs font-bold text-sky-800 bg-sky-200/80 px-2 py-0.5 rounded-full">Bendungan</div>
+            </div>
+
+            <!-- Rumput Bergerak Foreground -->
+            <div class="absolute bottom-0 inset-x-0 flex justify-between px-6 text-2xl sm:text-3xl animate-grass">
+                <span>🌿</span><span>🌱</span><span>🌿</span><span>🌱</span><span>🌿</span>
+            </div>
+        </div>
+
+        <!-- HEADER TOP BAR: Audio Controls & Player Badge -->
+        <header class="relative z-20 flex justify-between items-center bg-white/85 backdrop-blur-md p-2 sm:p-3 rounded-2xl shadow-lg border border-white/50">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl sm:text-3xl animate-hero">🦸‍♂️</span>
+                <div>
+                    <h1 class="text-xs sm:text-sm font-bold text-gray-800 leading-tight">Petualangan Energi Masa Depan</h1>
+                    <p class="text-[10px] sm:text-xs text-emerald-700 font-semibold" id="player-display">Pahlawan: -</p>
+                </div>
+            </div>
+
+            <!-- Kontrol Audio Real-Time -->
+            <div class="flex items-center gap-2 bg-amber-100/90 p-1.5 rounded-xl border border-amber-300 text-xs">
+                <button id="btn-audio-toggle" onclick="toggleAudio()" class="p-1.5 bg-amber-400 hover:bg-amber-500 rounded-lg font-bold shadow-md text-sm transition-transform active:scale-95" title="Mute/Unmute">
+                    🔊
+                </button>
+                <input type="range" id="volume-slider" min="0" max="100" value="70" oninput="changeVolume(this.value)" class="w-12 sm:w-20 accent-amber-600 cursor-pointer">
+                
+                <!-- Custom Audio File Upload -->
+                <label class="cursor-pointer bg-sky-500 hover:bg-sky-600 text-white p-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-md transition-transform active:scale-95" title="Ganti Lagu MP3 Kamu">
+                    🎵 <span class="hidden sm:inline">Ganti Lagu</span>
+                    <input type="file" id="music-upload" accept="audio/*" onchange="handleMusicUpload(event)" class="hidden">
+                </label>
+            </div>
+        </header>
+
+        <!-- SCREEN 1: HALAMAN AWAL (INPUT NAMA) -->
+        <section id="screen-input-name" class="relative z-10 my-auto flex flex-col items-center justify-center text-center">
+            <!-- Papan Kayu Header Tergantung Tali -->
+            <div class="wooden-sign px-6 sm:px-8 py-3 rounded-2xl text-yellow-200 font-bold text-xl sm:text-3xl mb-4 tracking-wide border-4 border-amber-900 animate-float-slow">
+                ⭐ PETUALANGAN KUIS ENERGI ⭐
+            </div>
+
+            <div class="game-card p-6 sm:p-8 rounded-3xl max-w-md w-full text-center">
+                <div class="text-4xl mb-2 animate-hero">🧑‍🌾</div>
+                <p class="text-gray-700 text-sm sm:text-base font-semibold mb-4">
+                    Masukkan nama kamu untuk bergabung menjadi Pahlawan Energi!
+                </p>
+
+                <form onsubmit="submitNameAndContinue(event)" class="flex flex-col gap-3">
+                    <input type="text" id="input-name" placeholder="Masukkan Nama Kamu..." required
+                           class="w-full px-4 py-3 rounded-xl border-2 border-amber-400 text-center font-bold text-gray-800 focus:outline-none focus:ring-4 focus:ring-yellow-300 text-base sm:text-lg bg-amber-50/50">
+                    <button type="submit" class="btn-bounce w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold text-base sm:text-lg py-3 rounded-xl shadow-lg border-b-4 border-amber-700 flex items-center justify-center gap-2">
+                        LANJUTKAN ➡️
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: HALAMAN MOTIVASI & SUARA NARRATION (BAGIAN KE-2) -->
+        <section id="screen-motivation" class="relative z-10 my-auto hidden flex-col items-center justify-center text-center px-2">
+            <div class="game-card p-6 sm:p-8 rounded-3xl max-w-xl w-full text-center border-4 border-emerald-400 bg-white/95 shadow-2xl relative">
+                <!-- Mascot & Title -->
+                <div class="text-5xl mb-2 animate-hero">🌍✨</div>
+                <h2 class="text-xl sm:text-2xl font-bold text-emerald-800 mb-2">Pesan Pahlawan Energi</h2>
+
+                <!-- Teks Motivasi -->
+                <div class="bg-emerald-50/80 border-2 border-emerald-300 p-4 rounded-2xl mb-6 shadow-inner text-gray-800 text-sm sm:text-base leading-relaxed font-semibold">
+                    "Hai <span id="motivate-player-name" class="text-emerald-700 font-bold underline">Pahlawan</span>! Selamat datang di Petualangan Energi Masa Depan! Kamu adalah pahlawan bumi kita. Mari belajar cara memanfaatkan energi matahari, angin, dan air bersama-sama. Ayo kita jaga bumi bersama! Semangat ya!"
+                </div>
+
+                <!-- Tombol Mulai Game Beranimasi Gerak-Gerak (Pulse/Wobble/Glow) -->
+                <button onclick="clickMulaiGame()" class="animate-start-btn w-full max-w-xs mx-auto bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 text-white font-black text-lg sm:text-2xl py-4 rounded-2xl border-b-4 border-emerald-800 shadow-xl flex items-center justify-center gap-3 tracking-wider cursor-pointer">
+                    🚀 MULAI GAME 🚀
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: LEVEL 1 - KUMPULKAN ENERGI MATAHARI -->
+        <section id="screen-level-1" class="relative z-10 my-auto hidden flex-col items-center justify-between h-full py-2">
+            <div class="bg-white/90 backdrop-blur px-4 py-2 rounded-xl text-center shadow-md border-2 border-amber-400">
+                <h2 class="text-base sm:text-lg font-bold text-amber-600">☀️ Level 1: Tangkap Cahaya Matahari</h2>
+                <p class="text-xs text-gray-600">Geser karakter atau klik matahari jatuh untuk kumpulkan 5 energi!</p>
+            </div>
+
+            <!-- Area Game Tangkap -->
+            <div id="catch-area" class="relative w-full flex-1 max-h-[250px] my-2 bg-sky-200/40 backdrop-blur-sm rounded-2xl border-2 border-dashed border-sky-400 overflow-hidden cursor-crosshair">
+                <!-- Basket / Character Hero -->
+                <div id="player-basket" class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-4xl sm:text-5xl transition-all duration-75 pointer-events-none select-none">
+                    🧑‍🌾
+                </div>
+            </div>
+
+            <!-- Progress Bar Level 1 -->
+            <div class="w-full max-w-xs bg-gray-200 rounded-full h-4 border border-gray-400 overflow-hidden shadow-inner">
+                <div id="level1-progress" class="bg-amber-400 h-full w-0 transition-all duration-300"></div>
+            </div>
+            <p id="level1-status" class="text-xs font-bold text-gray-700 mt-1">Terkumpul: 0 / 5 ☀️</p>
+        </section>
+
+        <!-- SCREEN 4: LEVEL 2 - JODOHKAN SUMBER ENERGI -->
+        <section id="screen-level-2" class="relative z-10 my-auto hidden flex-col items-center justify-between h-full py-2">
+            <div class="bg-white/90 backdrop-blur px-4 py-2 rounded-xl text-center shadow-md border-2 border-sky-400">
+                <h2 class="text-base sm:text-lg font-bold text-sky-600">🔗 Level 2: Jodohkan Sumber Energi</h2>
+                <p class="text-xs text-gray-600">Klik Sumber Energi di kiri, lalu klik Pasangan Alatnya di kanan!</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 sm:gap-8 w-full max-w-lg my-auto">
+                <!-- Kolom Sumber -->
+                <div class="flex flex-col gap-3" id="source-column">
+                    <button onclick="selectSource('sun')" id="src-sun" class="btn-bounce bg-amber-100 hover:bg-amber-200 border-2 border-amber-400 p-3 rounded-2xl flex items-center justify-center gap-2 text-sm sm:text-base font-bold text-amber-900 shadow-md">
+                        ☀️ Matahari
+                    </button>
+                    <button onclick="selectSource('wind')" id="src-wind" class="btn-bounce bg-sky-100 hover:bg-sky-200 border-2 border-sky-400 p-3 rounded-2xl flex items-center justify-center gap-2 text-sm sm:text-base font-bold text-sky-900 shadow-md">
+                        💨 Angin
+                    </button>
+                    <button onclick="selectSource('water')" id="src-water" class="btn-bounce bg-cyan-100 hover:bg-cyan-200 border-2 border-cyan-400 p-3 rounded-2xl flex items-center justify-center gap-2 text-sm sm:text-base font-bold text-cyan-900 shadow-md">
+                        💧 Air
+                    </button>
+                </div>
+
+                <!-- Kolom Alat Pasangan -->
+                <div class="flex flex-col gap-3" id="target-column">
+                    <button onclick="selectTarget('wind')" id="trg-wind" class="btn-bounce bg-white hover:bg-gray-100 border-2 border-gray-300 p-3 rounded-2xl flex items-center justify-center gap-2 text-sm sm:text-base font-bold text-gray-700 shadow-md">
+                        🎡 Kincir Angin
+                    </button>
+                    <button onclick="selectTarget('water')" id="trg-water" class="btn-bounce bg-white hover:bg-gray-100 border-2 border-gray-300 p-3 rounded-2xl flex items-center justify-center gap-2 text-sm sm:text-base font-bold text-gray-700 shadow-md">
+                        🌊 Bendungan
+                    </button>
+                    <button onclick="selectTarget('sun')" id="trg-sun" class="btn-bounce bg-white hover:bg-gray-100 border-2 border-gray-300 p-3 rounded-2xl flex items-center justify-center gap-2 text-sm sm:text-base font-bold text-gray-700 shadow-md">
+                        🟨 Panel Surya
+                    </button>
+                </div>
+            </div>
+
+            <p id="level2-hint" class="text-xs sm:text-sm font-bold text-emerald-800 bg-white/90 px-4 py-1.5 rounded-full border border-emerald-300 shadow-sm">
+                Pilih salah satu sumber energi di sebelah kiri!
+            </p>
+        </section>
+
+        <!-- SCREEN 5: LEVEL 3 - USIR AWAN POLUSI -->
+        <section id="screen-level-3" class="relative z-10 my-auto hidden flex-col items-center justify-between h-full py-2">
+            <div class="bg-white/90 backdrop-blur px-4 py-2 rounded-xl text-center shadow-md border-2 border-purple-400">
+                <h2 class="text-base sm:text-lg font-bold text-purple-600">☁️ Level 3: Usir Awan Polusi</h2>
+                <p class="text-xs text-gray-600">Klik 4 awan hitam polusi untuk membuat kota terang benderang!</p>
+            </div>
+
+            <!-- Area Kota Interaktif -->
+            <div id="city-area" class="relative w-full flex-1 max-h-[250px] my-2 rounded-2xl overflow-hidden bg-slate-800 transition-colors duration-700 border-4 border-slate-600 flex items-center justify-center">
+                <!-- Elemen Bangunan Kota -->
+                <div id="city-lights" class="absolute inset-0 flex items-end justify-around pb-4 opacity-30 transition-opacity duration-700 select-none">
+                    <span class="text-6xl">🏢</span>
+                    <span class="text-7xl">🏙️</span>
+                    <span class="text-5xl">🎡</span>
+                    <span class="text-6xl">🏫</span>
+                </div>
+
+                <!-- Container Awan Polusi -->
+                <div id="cloud-container" class="absolute inset-0 flex flex-wrap items-center justify-around p-4">
+                    <button onclick="clearCloud(this)" class="cloud-click text-5xl sm:text-6xl cursor-pointer hover:scale-110 transition-transform">⬛☁️</button>
+                    <button onclick="clearCloud(this)" class="cloud-click text-5xl sm:text-6xl cursor-pointer hover:scale-110 transition-transform">⬛☁️</button>
+                    <button onclick="clearCloud(this)" class="cloud-click text-5xl sm:text-6xl cursor-pointer hover:scale-110 transition-transform">⬛☁️</button>
+                    <button onclick="clearCloud(this)" class="cloud-click text-5xl sm:text-6xl cursor-pointer hover:scale-110 transition-transform">⬛☁️</button>
+                </div>
+            </div>
+
+            <p id="level3-status" class="text-xs font-bold text-amber-900 bg-amber-200 px-4 py-1 rounded-full border border-amber-400 shadow-sm">
+                Sisa Awan Polusi: 4 ☁️
+            </p>
+        </section>
+
+        <!-- SCREEN 6: SERTIFIKAT KELULUSAN -->
+        <section id="screen-certificate" class="relative z-10 my-auto hidden flex-col items-center justify-center h-full py-1">
+            <div id="certificate-area" class="bg-amber-50 border-8 border-double border-amber-600 p-4 sm:p-6 rounded-2xl max-w-xl w-full text-center shadow-2xl relative">
+                <div class="text-3xl sm:text-4xl mb-1 animate-hero">🏅</div>
+                <h2 class="text-lg sm:text-2xl font-bold text-amber-900 uppercase tracking-widest border-b-2 border-amber-400 pb-1 inline-block">Sertifikat Kelulusan</h2>
+                <p class="text-xs text-amber-800 mt-2">Diberikan kepada Pahlawan Lingkungan Cilik:</p>
+
+                <h3 id="cert-name" class="text-xl sm:text-3xl font-bold text-emerald-600 my-2 underline decoration-amber-400">Nama Pemain</h3>
+
+                <p class="text-xs sm:text-sm text-gray-700 font-medium">
+                    Telah berhasil menyelesaikan seluruh tantangan energi terbarukan dan resmi menjadi:
+                </p>
+                <div class="text-sm sm:text-lg font-bold text-amber-900 bg-amber-200/80 py-1 px-4 rounded-full my-2 inline-block border border-amber-400 shadow-sm">
+                    🌍 PAHLAWAN ENERGI BUMI 🌍
+                </div>
+
+                <!-- Bintang Prestasi -->
+                <div class="flex justify-center gap-1 text-amber-400 text-xl my-1">
+                    ⭐⭐⭐⭐⭐
+                </div>
+
+                <div class="flex justify-between items-end mt-4 text-[10px] sm:text-xs text-gray-500 border-t pt-2 border-amber-200">
+                    <p>Tanggal: <span id="cert-date">-</span></p>
+                    <p class="font-bold text-amber-800">Tim Energi Hijau 🍃</p>
+                </div>
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="flex gap-3 mt-4 no-print">
+                <button onclick="window.print()" class="btn-bounce bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs sm:text-sm px-4 py-2 rounded-xl shadow-md border-b-4 border-sky-700 flex items-center gap-1">
+                    🖨️ Cetak / Simpan
+                </button>
+                <button onclick="restartGame()" class="btn-bounce bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm px-4 py-2 rounded-xl shadow-md border-b-4 border-emerald-700 flex items-center gap-1">
+                    🔄 Main Lagi
+                </button>
+            </div>
+        </section>
+
+        <!-- Footer Credits -->
+        <footer class="relative z-20 text-center text-[10px] text-sky-900/80 font-bold mt-1">
+            Game Edukasi Energi Terbarukan • Ramah Anak & Edukatif
+        </footer>
+    </main>
+
+    <script>
+        // State Game Variables
+        let playerName = "";
+        let audioCtx = null;
+        let isMuted = false;
+        let volumeNode = null;
+        let backgroundSource = null;
+        let customAudioBuffer = null;
+        let isCustomAudioPlaying = false;
+
+        // Level States
+        let sunCount = 0;
+        let sunInterval = null;
+        let selectedSource = null;
+        let matchedPairs = 0;
+        let cloudsLeft = 4;
+
+        // Initialize Audio Synthesizer Context
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                volumeNode = audioCtx.createGain();
+                volumeNode.gain.value = 0.7; // default volume
+                volumeNode.connect(audioCtx.destination);
+                startBuiltInBGM();
+            }
+        }
+
+        // Built-in Cheerful Sound Synthesizer (Loops softly)
+        function startBuiltInBGM() {
+            if (isCustomAudioPlaying || !audioCtx) return;
+            
+            const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63];
+            let noteIdx = 0;
+
+            function playNextNote() {
+                if (isMuted || isCustomAudioPlaying) return;
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const noteGain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(notes[noteIdx], audioCtx.currentTime);
+                    
+                    noteGain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                    noteGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+
+                    osc.connect(noteGain);
+                    noteGain.connect(volumeNode);
+
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+
+                    noteIdx = (noteIdx + 1) % notes.length;
+                } catch(e) {}
+            }
+            setInterval(playNextNote, 500);
+        }
+
+        // Sound Effects (Cling, Win)
+        function playSFX(type) {
+            if (isMuted || !audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(volumeNode);
+
+                if (type === 'cling') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.2); // A5
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.2);
+                } else if (type === 'win') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(554.37, audioCtx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                }
+            } catch(e) {}
+        }
+
+        // Audio Upload Handler
+        function handleMusicUpload(event) {
+            initAudio();
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    audioCtx.decodeAudioData(e.target.result, function(buffer) {
+                        customAudioBuffer = buffer;
+                        playCustomMusic();
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        }
+
+        function playCustomMusic() {
+            if (!customAudioBuffer || !audioCtx) return;
+            if (backgroundSource) {
+                backgroundSource.stop();
+            }
+            backgroundSource = audioCtx.createBufferSource();
+            backgroundSource.buffer = customAudioBuffer;
+            backgroundSource.loop = true;
+            backgroundSource.connect(volumeNode);
+            backgroundSource.start(0);
+            isCustomAudioPlaying = true;
+        }
+
+        function toggleAudio() {
+            initAudio();
+            isMuted = !isMuted;
+            const btn = document.getElementById('btn-audio-toggle');
+            if (isMuted) {
+                volumeNode.gain.value = 0;
+                btn.innerHTML = '🔇';
+            } else {
+                const vol = document.getElementById('volume-slider').value;
+                volumeNode.gain.value = vol / 100;
+                btn.innerHTML = '🔊';
+            }
+        }
+
+        function changeVolume(val) {
+            initAudio();
+            if (volumeNode && !isMuted) {
+                volumeNode.gain.value = val / 100;
+            }
+        }
+
+        // Web Speech API - ONLY AT SECTION 2 (MOTIVATION PAGE)
+        function speakMotivationSpeech(name) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Clear queue
+                const text = `Hai ${name}! Selamat datang di Petualangan Energi Masa Depan! Kamu adalah pahlawan bumi kita. Mari belajar cara memanfaatkan energi matahari, angin, dan air bersama-sama. Ayo kita jaga bumi bersama! Semangat ya!`;
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.95;
+                utterance.pitch = 1.2; // Female cheerful pitch
+
+                // Try selecting female Indonesian voice if available
+                const voices = window.speechSynthesis.getVoices();
+                const idVoice = voices.find(v => v.lang.includes('id') && (v.name.toLowerCase().includes('female') || v.name.includes('Google')));
+                if (idVoice) utterance.voice = idVoice;
+
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // STEP 1: SUBMIT NAMA & PINDAH KE BAGIAN KE-2
+        function submitNameAndContinue(e) {
+            e.preventDefault();
+            initAudio();
+            
+            const input = document.getElementById('input-name');
+            playerName = input.value.trim() || 'Pahlawan Cilik';
+            document.getElementById('player-display').innerText = `Pahlawan: ${playerName}`;
+            document.getElementById('motivate-player-name').innerText = playerName;
+
+            // Switch from Section 1 (Name Input) to Section 2 (Motivation Page)
+            switchScreen('screen-input-name', 'screen-motivation');
+
+            // Trigger Voice Narration AT SECTION 2 ONLY
+            speakMotivationSpeech(playerName);
+        }
+
+        // STEP 2: KLIK TOMBOL "MULAI GAME" PADA BAGIAN KE-2 UNTUK MASUK LEVEL 1
+        function clickMulaiGame() {
+            playSFX('cling');
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop narration when game starts
+            }
+            switchScreen('screen-motivation', 'screen-level-1');
+            startLevel1();
+        }
+
+        function switchScreen(fromId, toId) {
+            document.getElementById(fromId).classList.add('hidden');
+            document.getElementById(fromId).classList.remove('flex');
+            
+            const target = document.getElementById(toId);
+            target.classList.remove('hidden');
+            target.classList.add('flex');
+        }
+
+        // LEVEL 1 LOGIC: TANGKAP MATAHARI
+        function startLevel1() {
+            sunCount = 0;
+            updateLevel1Progress();
+            
+            const area = document.getElementById('catch-area');
+            const basket = document.getElementById('player-basket');
+
+            // Move Basket via Mouse or Touch
+            area.onmousemove = (e) => {
+                const rect = area.getBoundingClientRect();
+                let x = e.clientX - rect.left;
+                basket.style.left = `${x}px`;
+            };
+
+            area.ontouchmove = (e) => {
+                if (e.touches.length > 0) {
+                    const rect = area.getBoundingClientRect();
+                    let x = e.touches[0].clientX - rect.left;
+                    basket.style.left = `${x}px`;
+                }
+            };
+
+            // Spawn Falling Suns
+            sunInterval = setInterval(() => {
+                if (sunCount >= 5) {
+                    clearInterval(sunInterval);
+                    return;
+                }
+                spawnSun();
+            }, 1100);
+        }
+
+        function spawnSun() {
+            const area = document.getElementById('catch-area');
+            const sun = document.createElement('div');
+            sun.className = 'sun-item text-3xl sm:text-4xl absolute cursor-pointer select-none transition-transform hover:scale-125';
+            sun.innerHTML = '☀️';
+            
+            const maxX = area.clientWidth - 40;
+            const startX = Math.max(10, Math.floor(Math.random() * maxX));
+            sun.style.left = `${startX}px`;
+            sun.style.top = '0px';
+
+            // Click directly to catch
+            sun.onclick = () => catchSun(sun);
+
+            area.appendChild(sun);
+
+            let top = 0;
+            const fall = setInterval(() => {
+                top += 2.5;
+                sun.style.top = `${top}px`;
+
+                // Check overlap with basket
+                if (top > area.clientHeight - 60) {
+                    const basketX = parseInt(document.getElementById('player-basket').style.left || (area.clientWidth/2));
+                    if (Math.abs(startX - basketX) < 55) {
+                        catchSun(sun);
+                        clearInterval(fall);
+                    }
+                }
+
+                if (top > area.clientHeight) {
+                    clearInterval(fall);
+                    if (sun.parentNode) sun.parentNode.removeChild(sun);
+                }
+            }, 30);
+        }
+
+        function catchSun(sunElem) {
+            if (sunElem.parentNode) {
+                sunElem.parentNode.removeChild(sunElem);
+                playSFX('cling');
+                sunCount++;
+                updateLevel1Progress();
+
+                if (sunCount >= 5) {
+                    playSFX('win');
+                    setTimeout(() => {
+                        switchScreen('screen-level-1', 'screen-level-2');
+                    }, 800);
+                }
+            }
+        }
+
+        function updateLevel1Progress() {
+            document.getElementById('level1-progress').style.width = `${(sunCount / 5) * 100}%`;
+            document.getElementById('level1-status').innerText = `Terkumpul: ${sunCount} / 5 ☀️`;
+        }
+
+        // LEVEL 2 LOGIC: JODOHKAN ENERGI
+        function selectSource(type) {
+            playSFX('cling');
+            selectedSource = type;
+
+            ['sun', 'wind', 'water'].forEach(t => {
+                const btn = document.getElementById(`src-${t}`);
+                if (t === type) {
+                    btn.classList.add('ring-4', 'ring-amber-400');
+                } else {
+                    btn.classList.remove('ring-4', 'ring-amber-400');
+                }
+            });
+
+            document.getElementById('level2-hint').innerText = "Sekarang klik pasangan alatnya di sebelah kanan!";
+        }
+
+        function selectTarget(targetType) {
+            if (!selectedSource) {
+                document.getElementById('level2-hint').innerText = "Pilih sumber energi di kiri dulu ya!";
+                return;
+            }
+
+            if (selectedSource === targetType) {
+                playSFX('cling');
+                document.getElementById(`src-${selectedSource}`).classList.add('opacity-40', 'pointer-events-none');
+                document.getElementById(`trg-${targetType}`).classList.add('opacity-40', 'pointer-events-none', 'bg-emerald-100');
+                
+                matchedPairs++;
+                selectedSource = null;
+                document.getElementById('level2-hint').innerText = "Yey Benar! ✨ Cocokkan semuanya!";
+
+                if (matchedPairs >= 3) {
+                    playSFX('win');
+                    setTimeout(() => {
+                        switchScreen('screen-level-2', 'screen-level-3');
+                    }, 1000);
+                }
+            } else {
+                document.getElementById('level2-hint').innerText = "Ups! Kurang pas, coba pilih alat yang lain!";
+            }
+        }
+
+        // LEVEL 3 LOGIC: USIR AWAN POLUSI
+        function clearCloud(cloudBtn) {
+            playSFX('cling');
+            cloudBtn.style.opacity = '0';
+            cloudBtn.style.pointerEvents = 'none';
+
+            cloudsLeft--;
+            document.getElementById('level3-status').innerText = `Sisa Awan Polusi: ${cloudsLeft} ☁️`;
+
+            const lights = document.getElementById('city-lights');
+            const cityArea = document.getElementById('city-area');
+            
+            if (cloudsLeft === 3) {
+                lights.style.opacity = '0.5';
+                cityArea.className = cityArea.className.replace('bg-slate-800', 'bg-sky-800');
+            } else if (cloudsLeft === 2) {
+                lights.style.opacity = '0.7';
+                cityArea.className = cityArea.className.replace('bg-sky-800', 'bg-sky-600');
+            } else if (cloudsLeft === 1) {
+                lights.style.opacity = '0.9';
+                cityArea.className = cityArea.className.replace('bg-sky-600', 'bg-sky-400');
+            } else if (cloudsLeft === 0) {
+                lights.style.opacity = '1';
+                cityArea.className = cityArea.className.replace('bg-sky-400', 'bg-sky-200');
+                
+                playSFX('win');
+                setTimeout(showCertificate, 800);
+            }
+        }
+
+        // SERTIFIKAT KELULUSAN
+        function showCertificate() {
+            switchScreen('screen-level-3', 'screen-certificate');
+
+            document.getElementById('cert-name').innerText = playerName;
+            const today = new Date();
+            document.getElementById('cert-date').innerText = today.toLocaleDateString('id-ID', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            });
+
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 130,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        // RESTART GAME
+        function restartGame() {
+            matchedPairs = 0;
+            cloudsLeft = 4;
+            selectedSource = null;
+
+            // Reset Level 2 UI
+            ['sun', 'wind', 'water'].forEach(t => {
+                const s = document.getElementById(`src-${t}`);
+                const trg = document.getElementById(`trg-${t}`);
+                s.classList.remove('opacity-40', 'pointer-events-none', 'ring-4', 'ring-amber-400');
+                trg.classList.remove('opacity-40', 'pointer-events-none', 'bg-emerald-100');
+            });
+
+            // Reset Level 3 UI
+            const container = document.getElementById('cloud-container');
+            container.innerHTML = `
+                <button onclick="clearCloud(this)" class="cloud-click text-5xl sm:text-6xl cursor-pointer hover:scale-110 transition-transform">⬛☁️</button>
+                <button onclick="clearCloud(this)" class="cloud-click text-5xl sm:text-6xl cursor-pointer hover:scale-110 transition-transform">⬛☁️</button>
+                <button onclick="clearCloud(this)" class="cloud-click text-5xl sm:text-6xl cursor-pointer hover:scale-110 transition-transform">⬛☁️</button>
+                <button onclick="clearCloud(this)" class="cloud-click text-5xl sm:text-6xl cursor-pointer hover:scale-110 transition-transform">⬛☁️</button>
+            `;
+            document.getElementById('city-area').className = "relative w-full flex-1 max-h-[250px] my-2 rounded-2xl overflow-hidden bg-slate-800 transition-colors duration-700 border-4 border-slate-600 flex items-center justify-center";
+            document.getElementById('city-lights').style.opacity = '0.3';
+            document.getElementById('level3-status').innerText = `Sisa Awan Polusi: 4 ☁️`;
+
+            switchScreen('screen-certificate', 'screen-input-name');
+        }
+    </script>
+</body>
+</html>
